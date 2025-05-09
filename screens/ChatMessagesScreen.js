@@ -15,11 +15,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { Feather } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
+import { Feather, Ionicons, FontAwesome, MaterialIcons, Entypo } from "@expo/vector-icons";
 import EmojiSelector from "react-native-emoji-selector";
 import { UserType } from "../UserContext";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -35,8 +31,7 @@ const ChatMessagesScreen = () => {
   const route = useRoute();
   const { recepientId } = route.params;
   const [message, setMessage] = useState("");
-  const { userId, setUserId } = useContext(UserType);
-
+  const { userId } = useContext(UserType);
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
@@ -63,11 +58,10 @@ const ChatMessagesScreen = () => {
         `https://chatapp-m0q8.onrender.com/messages/${userId}/${recepientId}`
       );
       const data = await response.json();
-
       if (response.ok) {
         setMessages(data);
       } else {
-        console.log("error showing messags", response.status.message);
+        console.log("error showing messages", response.status);
       }
     } catch (error) {
       console.log("error fetching messages", error);
@@ -84,23 +78,22 @@ const ChatMessagesScreen = () => {
         const response = await fetch(
           `https://chatapp-m0q8.onrender.com/user/${recepientId}`
         );
-
         const data = await response.json();
         setRecepientData(data);
       } catch (error) {
-        console.log("error retrieving details", error);
+        console.log("error retrieving user details", error);
       }
     };
 
     fetchRecepientData();
   }, []);
+
   const handleSend = async (messageType, imageUri) => {
     try {
       const formData = new FormData();
       formData.append("senderId", userId);
       formData.append("recepientId", recepientId);
 
-      //if the message type id image or a normal text
       if (messageType === "image") {
         formData.append("messageType", "image");
         formData.append("imageFile", {
@@ -124,7 +117,6 @@ const ChatMessagesScreen = () => {
       if (response.ok) {
         setMessage("");
         setSelectedImage("");
-
         fetchMessages();
       }
     } catch (error) {
@@ -132,7 +124,6 @@ const ChatMessagesScreen = () => {
     }
   };
 
-  console.log("messages", selectedMessages);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -144,13 +135,10 @@ const ChatMessagesScreen = () => {
             size={24}
             color="black"
           />
-
           {selectedMessages.length > 0 ? (
-            <View>
-              <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                {selectedMessages.length}
-              </Text>
-            </View>
+            <Text style={{ fontSize: 16, fontWeight: "500" }}>
+              {selectedMessages.length}
+            </Text>
           ) : (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Image
@@ -162,7 +150,6 @@ const ChatMessagesScreen = () => {
                 }}
                 source={{ uri: recepientData?.image }}
               />
-
               <Text style={{ marginLeft: 5, fontSize: 15, fontWeight: "bold" }}>
                 {recepientData?.name}
               </Text>
@@ -201,10 +188,7 @@ const ChatMessagesScreen = () => {
       );
 
       if (response.ok) {
-        setSelectedMessages((prevSelectedMessages) =>
-          prevSelectedMessages.filter((id) => !messageIds.includes(id))
-        );
-
+        setSelectedMessages([]);
         fetchMessages();
       } else {
         console.log("error deleting messages", response.status);
@@ -213,10 +197,12 @@ const ChatMessagesScreen = () => {
       console.log("error deleting messages", error);
     }
   };
+
   const formatTime = (time) => {
     const options = { hour: "numeric", minute: "numeric" };
     return new Date(time).toLocaleString("en-US", options);
   };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -225,26 +211,22 @@ const ChatMessagesScreen = () => {
       quality: 1,
     });
 
-    console.log(result);
     if (!result.canceled) {
-      handleSend("image", result.uri);
+      handleSend("image", result.assets[0].uri);
     }
   };
-  const handleSelectMessage = (message) => {
-    //check if the message is already selected
-    const isSelected = selectedMessages.includes(message._id);
 
+  const handleSelectMessage = (message) => {
+    const isSelected = selectedMessages.includes(message._id);
     if (isSelected) {
-      setSelectedMessages((previousMessages) =>
-        previousMessages.filter((id) => id !== message._id)
+      setSelectedMessages((prev) =>
+        prev.filter((id) => id !== message._id)
       );
     } else {
-      setSelectedMessages((previousMessages) => [
-        ...previousMessages,
-        message._id,
-      ]);
+      setSelectedMessages((prev) => [...prev, message._id]);
     }
   };
+
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: "#F0F0F0" }}>
       <ScrollView
@@ -253,32 +235,19 @@ const ChatMessagesScreen = () => {
         onContentSizeChange={handleContentSizeChange}
       >
         {messages.map((item, index) => {
+          const isSender = item?.senderId?._id === userId;
+          const isSelected = selectedMessages.includes(item._id);
+
           if (item.messageType === "text") {
-            const isSelected = selectedMessages.includes(item._id);
             return (
               <Pressable
-                onLongPress={() => handleSelectMessage(item)}
                 key={index}
+                onLongPress={() => handleSelectMessage(item)}
                 style={[
-                  item?.senderId?._id === userId
-                    ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
-
-                  isSelected && { width: "100%", backgroundColor: "#F0FFFF" },
+                  isSender
+                    ? styles.senderBubble
+                    : styles.receiverBubble,
+                  isSelected && styles.selectedBubble,
                 ]}
               >
                 <Text
@@ -289,14 +258,7 @@ const ChatMessagesScreen = () => {
                 >
                   {item?.message}
                 </Text>
-                <Text
-                  style={{
-                    textAlign: "right",
-                    fontSize: 9,
-                    color: "gray",
-                    marginTop: 5,
-                  }}
-                >
+                <Text style={styles.timestamp}>
                   {formatTime(item.timeStamp)}
                 </Text>
               </Pressable>
@@ -304,70 +266,41 @@ const ChatMessagesScreen = () => {
           }
 
           if (item.messageType === "image") {
-            const baseUrl =
-              "/Users/sujananand/Build/messenger-project/api/files/";
-            const imageUrl = item.imageUrl;
-            const filename = imageUrl.split("/").pop();
-            const source = { uri: baseUrl + filename };
+            const source = item.imageUrl ? { uri: item.imageUrl } : null;
+
             return (
               <Pressable
                 key={index}
+                onLongPress={() => handleSelectMessage(item)}
                 style={[
-                  item?.senderId?._id === userId
-                    ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
+                  isSender
+                    ? styles.senderBubble
+                    : styles.receiverBubble,
+                  isSelected && styles.selectedBubble,
                 ]}
               >
                 <View>
-                  <Image
-                    source={source}
-                    style={{ width: 200, height: 200, borderRadius: 7 }}
-                  />
-                  <Text
-                    style={{
-                      textAlign: "right",
-                      fontSize: 9,
-                      position: "absolute",
-                      right: 10,
-                      bottom: 7,
-                      color: "white",
-                      marginTop: 5,
-                    }}
-                  >
+                  {source ? (
+                    <Image
+                      source={source}
+                      style={{ width: 200, height: 200, borderRadius: 7 }}
+                    />
+                  ) : (
+                    <Text>Image not available</Text>
+                  )}
+                  <Text style={[styles.timestamp, { color: "white", position: "absolute", right: 10, bottom: 7 }]}>
                     {formatTime(item?.timeStamp)}
                   </Text>
                 </View>
               </Pressable>
             );
           }
+
+          return null;
         })}
       </ScrollView>
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 10,
-          paddingVertical: 10,
-          borderTopWidth: 1,
-          borderTopColor: "#dddddd",
-          marginBottom: showEmojiSelector ? 0 : 25,
-        }}
-      >
+      <View style={styles.inputContainer}>
         <Entypo
           onPress={handleEmojiPress}
           style={{ marginRight: 5 }}
@@ -378,49 +311,24 @@ const ChatMessagesScreen = () => {
 
         <TextInput
           value={message}
-          onChangeText={(text) => setMessage(text)}
-          style={{
-            flex: 1,
-            height: 40,
-            borderWidth: 1,
-            borderColor: "#dddddd",
-            borderRadius: 20,
-            paddingHorizontal: 10,
-          }}
-          placeholder="Type Your message..."
+          onChangeText={setMessage}
+          style={styles.textInput}
+          placeholder="Type your message..."
         />
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 7,
-            marginHorizontal: 8,
-          }}
-        >
+        <View style={styles.actionIcons}>
           <Entypo onPress={pickImage} name="camera" size={24} color="gray" />
-
           <Feather name="mic" size={24} color="gray" />
         </View>
 
-        <Pressable
-          onPress={() => handleSend("text")}
-          style={{
-            backgroundColor: "#007bff",
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 20,
-          }}
-        >
+        <Pressable onPress={() => handleSend("text")} style={styles.sendButton}>
           <Text style={{ color: "white", fontWeight: "bold" }}>Send</Text>
         </Pressable>
       </View>
 
       {showEmojiSelector && (
         <EmojiSelector
-          onEmojiSelected={(emoji) => {
-            setMessage((prevMessage) => prevMessage + emoji);
-          }}
+          onEmojiSelected={(emoji) => setMessage((prev) => prev + emoji)}
           style={{ height: 250 }}
         />
       )}
@@ -430,4 +338,60 @@ const ChatMessagesScreen = () => {
 
 export default ChatMessagesScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  senderBubble: {
+    alignSelf: "flex-end",
+    backgroundColor: "#DCF8C6",
+    padding: 8,
+    maxWidth: "60%",
+    borderRadius: 7,
+    margin: 10,
+  },
+  receiverBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "white",
+    padding: 8,
+    margin: 10,
+    borderRadius: 7,
+    maxWidth: "60%",
+  },
+  selectedBubble: {
+    width: "100%",
+    backgroundColor: "#F0FFFF",
+  },
+  timestamp: {
+    textAlign: "right",
+    fontSize: 9,
+    color: "gray",
+    marginTop: 5,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#dddddd",
+    marginBottom: 25,
+  },
+  textInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#dddddd",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+  },
+  actionIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginHorizontal: 8,
+  },
+  sendButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+  },
+});

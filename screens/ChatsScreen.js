@@ -12,7 +12,7 @@ const ChatsScreen = () => {
     const acceptedFriendsList = async () => {
       try {
         const response = await fetch(
-          `https://chatapp-m0q8.onrender.com/accepted-friends/${userId}`
+          `http://localhost:8000/accepted-friends/${userId}`
         );
         const data = await response.json();
 

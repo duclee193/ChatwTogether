@@ -45,7 +45,7 @@ const HomeScreen = () => {
       setUserId(userId);
 
       axios
-        .get(`https://chatapp-m0q8.onrender.com/users/${userId}`)
+        .get(`http://localhost:8000/users/${userId}`)
         .then((response) => {
           setUsers(response.data);
         })

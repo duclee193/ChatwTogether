@@ -11,7 +11,7 @@ const User = ({ item }) => {
     const fetchFriendRequests = async () => {
       try {
         const response = await fetch(
-          `https://chatapp-m0q8.onrender.com/friend-requests/sent/${userId}`
+          `http://localhost:8000/friend-requests/sent/${userId}`
         );
 
         const data = await response.json();
@@ -32,7 +32,7 @@ const User = ({ item }) => {
     const fetchUserFriends = async () => {
       try {
         const response = await fetch(
-          `https://chatapp-m0q8.onrender.com/friends/${userId}`
+          `http://localhost:8000//friends/${userId}`
         );
 
         const data = await response.json();
@@ -52,7 +52,7 @@ const User = ({ item }) => {
   const sendFriendRequest = async (currentUserId, selectedUserId) => {
     try {
       const response = await fetch(
-        "https://chatapp-m0q8.onrender.com/friend-request",
+        "http://localhost:8000/friend-request",
         {
           method: "POST",
           headers: {

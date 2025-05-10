@@ -44,15 +44,7 @@ const HomeScreen = () => {
       const userId = decodedToken.userId;
       setUserId(userId);
 
-      axios
-        .get(`https://chatapp-m0q8.onrender.com/users/${userId}`)
-        .then((response) => {
-          setUsers(response.data);
-        })
-        .catch((error) => {
-          console.log("error retrieving users", error);
-        });
-    };
+          };
 
     fetchUsers();
   }, []);

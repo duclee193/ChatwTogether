@@ -5,6 +5,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
+    "android-port": "expo start --android --port=8082",
+    "clear-cache": "expo start -c",
     "ios": "expo start --ios",
     "web": "expo start --web"
   },

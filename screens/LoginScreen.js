@@ -37,8 +37,8 @@ const LoginScreen = () => {
       email: email,
       password: password,
     };    axios
-      // .post("http://10.0.2.2:8000/login", user)  
-      .post("http://localhost:8000/login", user)
+      .post("http://10.0.2.2:8000/login", user)  // này dành cho android emulator
+      // .post("http://localhost:8000/login", user)
       .then((response) => {
         console.log(response);
         const token = response.data.token;

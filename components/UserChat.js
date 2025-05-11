@@ -10,7 +10,7 @@ const UserChat = ({ item }) => {
   const fetchMessages = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/com/messages/${userId}/${item._id}`
+        `http://10.0.2.2:8000/com/messages/${userId}/${item._id}`
       );
       const data = await response.json();
 

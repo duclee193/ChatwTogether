@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 import React, { useLayoutEffect, useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +12,26 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const { userId, setUserId } = useContext(UserType);
   const [users, setUsers] = useState([]);
+
+  const handleLogout = async () => {
+    try {
+      // Clear the auth token
+      await AsyncStorage.removeItem("authToken");
+
+      // Reset user ID in context
+      setUserId("");
+
+      // Navigate to login screen
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      Alert.alert("Logout Error", "There was an error logging out");
+      console.log("Logout error:", error);
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -29,6 +49,12 @@ const HomeScreen = () => {
           <MaterialIcons
             onPress={() => navigation.navigate("Friends")}
             name="people-outline"
+            size={24}
+            color="black"
+          />
+          <MaterialIcons
+            onPress={handleLogout}
+            name="logout"
             size={24}
             color="black"
           />

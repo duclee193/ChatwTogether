@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   View,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -31,14 +32,12 @@ const LoginScreen = () => {
     };
 
     checkLoginStatus();
-  }, []);
-  const handleLogin = () => {
+  }, []);  const handleLogin = () => {
     const user = {
       email: email,
       password: password,
-    };
-
-    axios
+    };    axios
+      // .post("http://10.0.2.2:8000/login", user)  
       .post("http://localhost:8000/login", user)
       .then((response) => {
         console.log(response);

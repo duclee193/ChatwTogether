@@ -15,10 +15,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem("authToken");
+          const token = await AsyncStorage.getItem("authToken");
 
         if (token) {
           navigation.replace("Home");

@@ -32,12 +32,7 @@ const LoginScreen = () => {
 
     checkLoginStatus();
   }, []);
-  const handleLogin = () => {
-    const user = {
-      email: email,
-      password: password,
-    };
-
+  
     axios
       .post("https://chatapp-m0q8.onrender.com/login", user)
       .then((response) => {

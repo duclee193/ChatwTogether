@@ -69,7 +69,7 @@ const RegisterScreen = () => {
           </Text>
 
           <Text style={{ fontSize: 17, fontWeight: "600", marginTop: 15 }}>
-            Register To your Account
+            Register to your account !
           </Text>
         </View>
 
@@ -131,7 +131,7 @@ const RegisterScreen = () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="Passowrd"
+              placeholder="Password"
             />
           </View>
 
@@ -151,7 +151,7 @@ const RegisterScreen = () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="Image"
+              placeholder="Your URL Image"
             />
           </View>
 

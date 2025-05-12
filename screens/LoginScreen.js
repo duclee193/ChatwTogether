@@ -80,7 +80,7 @@ const LoginScreen = () => {
         <View style={{ marginTop: 50 }}>
           <View>
             <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Email
+              Email.
             </Text>
 
             <TextInput
@@ -94,13 +94,13 @@ const LoginScreen = () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="enter Your Email"
+              placeholder="Enter your email."
             />
           </View>
 
           <View style={{ marginTop: 10 }}>
             <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Password
+              Password.
             </Text>
 
             <TextInput
@@ -115,7 +115,7 @@ const LoginScreen = () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="Passowrd"
+              placeholder="Password."
             />
           </View>
 
@@ -148,7 +148,7 @@ const LoginScreen = () => {
             style={{ marginTop: 15 }}
           >
             <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-              Dont't have an account? Sign Up
+              Do not have an account? Sign up
             </Text>
           </Pressable>
         </View>
